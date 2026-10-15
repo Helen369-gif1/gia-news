@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meet Gia — Glonari News</title>
+<meta name="description" content="Gia is your personal AI assistant for the news. She follows what you care about, explains what it means for you, and tells you honestly what isn’t known yet.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#100E0B; --bg2:#17140F; --surface:#1E1A14; --surface2:#2A241C; --card:#1A1713;
+  --line:#332C22; --line2:#4A4033; --text:#F3EDE3; --soft:#D6CCBD; --muted:#BFB4A4; --faint:#A89D8C;
+  --gold:#D9A54A; --gold-light:#E2B55E; --on-gold:#1A1408; --live:#7FCB8A;
+  --serif:Newsreader, Georgia, "Times New Roman", serif;
+  --sans:Manrope, "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth; scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0; background:var(--bg); color:var(--text); font-family:var(--sans); -webkit-font-smoothing:antialiased; overflow-x:hidden}
+img{max-width:100%}
+a{color:var(--gold-light)} a:hover{color:#F3D08C}
+.wrap{max-width:1240px; margin:0 auto; padding-left:24px; padding-right:24px}
+.eyebrow{font-size:13px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--gold)}
+.serif{font-family:var(--serif); font-weight:500}
+.btn{display:inline-flex; align-items:center; gap:10px; min-height:52px; padding:16px 28px; border-radius:999px; font-size:17px; font-weight:700; text-decoration:none; font-family:var(--sans); cursor:pointer; border:1px solid transparent; white-space:nowrap}
+.btn-gold{background:var(--gold); color:var(--on-gold)} .btn-gold:hover{background:#E6B65F; color:var(--on-gold)}
+.btn-ghost{background:transparent; color:var(--text); border-color:var(--line2)} .btn-ghost:hover{border-color:var(--gold); color:var(--text)}
+.btn-sm{min-height:44px; padding:12px 20px; font-size:15px}
+:focus-visible{outline:2px solid var(--gold-light); outline-offset:3px}
+
+/* header (sits over the intro video) */
+.site-header{position:absolute; top:env(safe-area-inset-top,0px); left:0; right:0; z-index:5; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; padding-top:22px; padding-bottom:22px}
+.logo{display:flex; align-items:baseline; gap:10px; text-decoration:none; color:var(--text)}
+.logo b{font-family:var(--serif); font-size:24px; font-weight:600; letter-spacing:.08em}
+.logo span{font-size:13px; font-weight:600; letter-spacing:.22em; color:var(--gold)}
+nav{display:flex; flex-wrap:wrap; align-items:center; gap:24px}
+nav .navlink{color:var(--soft); text-decoration:none; font-size:15px; font-weight:500; text-shadow:0 1px 8px rgba(0,0,0,.6)}
+nav .navlink:hover{color:var(--text)}
+
+/* intro: scroll-driven video */
+.intro{position:relative; height:440vh; background:#000}
+.intro-stage{position:sticky; top:0; height:100vh; height:100svh; overflow:hidden}
+.intro-video,.intro-poster{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 50%}
+.intro-poster{display:none}
+.intro-shade{position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(to top, var(--bg) 0%, rgba(16,14,11,.82) 18%, rgba(16,14,11,.35) 42%, rgba(16,14,11,0) 62%),
+    linear-gradient(to bottom, rgba(16,14,11,.65) 0%, rgba(16,14,11,0) 22%),
+    linear-gradient(to right, rgba(16,14,11,.55) 0%, rgba(16,14,11,0) 48%)}
+.intro-copy{position:absolute; left:0; right:0; bottom:clamp(56px,11vh,112px); z-index:2; display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:28px}
+.intro-lines{display:grid; flex:0 1 auto; width:min(100%, 34vw); min-width:min(100%, 420px)}
+.intro-line{grid-area:1/1; margin:0; font-family:var(--serif); font-weight:500; font-size:clamp(42px,5.6vw,84px); line-height:1.02; letter-spacing:-.015em; text-wrap:balance; opacity:0; will-change:opacity,transform; text-shadow:0 2px 24px rgba(0,0,0,.45)}
+.intro-line:first-child{opacity:1}
+.intro-cta{grid-area:2/1; margin-top:28px; opacity:0; visibility:hidden; transition:opacity .4s ease, visibility .4s}
+.intro-cta.on{opacity:1; visibility:visible}
+.intro-side{display:flex; flex-direction:column; align-items:flex-end; gap:14px; padding-bottom:10px}
+.intro-hint{font-size:14px; color:var(--soft); transition:opacity .3s}
+.intro-steps{display:flex; gap:6px}
+.intro-steps i{display:block; width:36px; height:2px; background:rgba(243,237,227,.22); overflow:hidden}
+.intro-steps i b{display:block; height:100%; width:100%; background:var(--gold); transform-origin:left; transform:scaleX(0)}
+
+/* meet Gia (after the intro) */
+.hero{display:flex; flex-wrap:wrap; align-items:flex-end; gap:56px 72px; padding-top:72px; padding-bottom:96px}
+.hero-text{flex:1 1 520px; min-width:0; display:flex; flex-direction:column; gap:28px}
+.hero h1{margin:0; font-family:var(--serif); font-weight:500; font-size:clamp(40px,5.2vw,68px); line-height:1.04; letter-spacing:-.01em}
+.hero h1 em, .final h2 em{color:var(--gold-light); font-style:italic}
+.hero h1 em{white-space:nowrap}
+.lead{margin:0; font-size:19px; line-height:1.6; color:#CFC5B6; max-width:34rem}
+.row{display:flex; flex-wrap:wrap; gap:14px; align-items:center}
+.small{font-size:14px; color:var(--faint)}
+.hero-quote{flex:1 1 340px; min-width:0; max-width:460px; margin:0; border-left:2px solid var(--gold); padding:6px 0 6px 28px; display:flex; flex-direction:column; gap:18px}
+.hero-quote q{font-family:var(--serif); font-size:clamp(24px,2.4vw,30px); line-height:1.3}
+.who{display:flex; align-items:center; gap:12px; font-size:15px; font-weight:700}
+.who img{width:44px; height:44px; border-radius:50%; object-fit:cover; object-position:50% 18%}
+.who small{display:block; font-weight:500; color:var(--muted); font-size:14px}
+.live{width:8px; height:8px; border-radius:50%; background:var(--live); display:inline-block}
+
+/* demo */
+.band{background:var(--bg2); border-top:1px solid #2C261E; border-bottom:1px solid #2C261E}
+.section{padding-top:88px; padding-bottom:88px; display:flex; flex-direction:column; gap:40px}
+.section-head{display:flex; flex-direction:column; gap:14px; max-width:46rem}
+.section-head h2{margin:0; font-family:var(--serif); font-weight:500; font-size:clamp(34px,4vw,52px); line-height:1.08}
+.section-head p{margin:0; font-size:16px; line-height:1.6; color:var(--muted)}
+.demo{display:flex; gap:28px; align-items:flex-start}
+.gia-card{flex:0 0 300px; background:var(--surface); border:1px solid var(--line); border-radius:24px; overflow:hidden; position:sticky; top:24px}
+.gia-card img{display:block; width:100%; height:320px; object-fit:cover; object-position:50% 20%}
+.gia-card .body{padding:20px 22px 24px; display:flex; flex-direction:column; gap:10px}
+.gia-card .name{display:flex; align-items:center; gap:8px; font-weight:700; font-size:17px}
+.gia-card p{margin:0; font-size:14px; line-height:1.55; color:var(--muted)}
+
+.chat{flex:1 1 auto; min-width:0; background:var(--surface); border:1px solid var(--line); border-radius:24px; display:flex; flex-direction:column}
+.chat-head{display:flex; align-items:center; gap:12px; padding:18px 28px; border-bottom:1px solid var(--line)}
+.chat-head .avatar{width:36px; height:36px}
+.chat-head .who-t{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; font-weight:700; font-size:15px}
+.chat-head small{font-weight:500; font-size:13px; color:var(--faint)}
+.restart{display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:8px 14px; border-radius:999px; border:1px solid var(--line2); background:transparent; color:var(--soft); font:600 14px var(--sans); cursor:pointer}
+.restart:hover{border-color:var(--gold); color:var(--text)}
+.restart[hidden]{display:none}
+.chat-log{padding:32px 28px 36px; display:flex; flex-direction:column; gap:22px; min-height:460px}
+.msg-gia{display:flex; gap:12px; align-items:flex-start; max-width:620px; scroll-margin-top:24px}
+.avatar{width:40px; height:40px; border-radius:50%; object-fit:cover; object-position:50% 18%; flex-shrink:0}
+.bubble-gia{background:var(--surface2); border-radius:4px 18px 18px 18px; padding:13px 18px; font-size:16px; line-height:1.6}
+.msg-you{display:flex; justify-content:flex-end}
+.bubble-you{background:var(--gold); color:var(--on-gold); border-radius:18px 4px 18px 18px; padding:11px 18px; font-size:16px; font-weight:600; line-height:1.5; max-width:440px}
+.block{margin-left:52px; max-width:600px; background:#14110D; border:1px solid #3A3228; border-radius:18px; padding:22px 24px; display:flex; flex-direction:column; gap:14px}
+.block-label{font-size:13px; font-weight:700; color:var(--gold-light)}
+.block-label span{font-weight:500; color:var(--faint)}
+.block p{margin:0; font-size:16px; line-height:1.65; color:var(--soft)}
+.block .note{font-size:14px; line-height:1.5; color:var(--faint)}
+
+.topics{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px}
+.topics li{display:flex; flex-direction:column; gap:2px}
+.topics b{font-size:16px; font-weight:700; color:var(--text)}
+.topics span{font-size:14px; line-height:1.5; color:var(--muted)}
+
+.story h3{margin:0; font-family:var(--serif); font-size:24px; line-height:1.25; font-weight:500}
+.tabs{display:flex; flex-wrap:wrap; gap:8px}
+.tab{border-radius:999px; padding:8px 14px; font:600 14px var(--sans); min-height:40px; cursor:pointer; background:transparent; color:var(--muted); border:1px solid #3A3228}
+.tab:hover{color:var(--text); border-color:#8A7347}
+.tab[aria-expanded="true"]{background:#2E271D; color:var(--text); border-color:var(--gold)}
+.panel{border-top:1px solid #3A3228; padding-top:14px; display:flex; flex-direction:column; gap:8px}
+.panel p{font-size:15px; line-height:1.6}
+
+.answer{border-color:#7A6236; background:#1C170F}
+.answer p:not(.step){font-family:var(--serif); font-size:20px; line-height:1.45; color:var(--text)}
+.answer .step{color:var(--text); font-weight:600; font-size:15px; line-height:1.55}
+
+.memory .plan{font-family:var(--serif); font-size:21px; line-height:1.3; color:var(--text)}
+.toggles{display:flex; flex-wrap:wrap; gap:8px}
+.toggle{border-radius:999px; padding:8px 14px; min-height:40px; font:600 14px var(--sans); cursor:pointer; background:transparent; color:var(--faint); border:1px dashed var(--line2); text-decoration:line-through}
+.toggle[aria-pressed="true"]{background:var(--surface2); color:var(--text); border:1px solid var(--line2); text-decoration:none}
+.toggle:hover{border-color:var(--gold)}
+.linkish{align-self:flex-start; background:none; border:0; padding:4px 0; min-height:32px; color:var(--gold-light); font:600 14px var(--sans); cursor:pointer; text-decoration:underline; text-underline-offset:3px}
+
+.ask-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px}
+.ask-list li{font-family:var(--serif); font-style:italic; font-size:19px; line-height:1.4; color:var(--text)}
+
+.typing{display:flex; gap:6px; padding:16px 18px}
+.dot{width:7px; height:7px; border-radius:50%; background:var(--gold); animation:dot 1.2s infinite ease-in-out}
+.dot:nth-child(2){animation-delay:.15s} .dot:nth-child(3){animation-delay:.3s}
+.choices{display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px; padding-top:4px}
+.chip{border-radius:999px; padding:12px 20px; font:600 15px var(--sans); min-height:46px; cursor:pointer; text-align:left; background:transparent; color:var(--text); border:1px solid var(--line2)}
+.chip:hover{border-color:var(--gold)}
+.chip.primary{background:var(--gold); color:var(--on-gold); border-color:var(--gold)}
+.chip.primary:hover{background:#E6B65F}
+a.chip{display:inline-flex; align-items:center; text-decoration:none}
+a.chip.primary:hover{color:var(--on-gold)}
+.sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
+@keyframes dot{0%,80%,100%{opacity:.25} 40%{opacity:1}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} .dot{animation:none; opacity:.7}}
+@media (max-width:860px){
+  .gia-card{display:none}
+}
+@media (max-width:640px){
+  .chat-head{padding:14px 16px}
+  .chat-head small{font-size:12px}
+  .chat-log{padding:24px 16px 28px; gap:20px; min-height:0}
+  .block{margin-left:0; padding:18px}
+  .msg-gia .avatar{width:32px; height:32px}
+  .choices{justify-content:stretch}
+  .chip{flex:1 1 100%; text-align:center; justify-content:center}
+}
+
+/* how */
+.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px}
+.card{background:var(--card); border:1px solid #2E281F; border-radius:22px; padding:30px; display:flex; flex-direction:column; gap:14px}
+.card h3{margin:0; font-family:var(--serif); font-weight:500; font-size:26px; line-height:1.2}
+.card p{margin:0; font-size:16px; line-height:1.65; color:var(--muted)}
+.trust{border:1px solid #2E281F; border-radius:26px; padding:40px; display:flex; flex-wrap:wrap; gap:36px; align-items:flex-start; margin-bottom:96px}
+.trust-head{flex:1 1 280px; min-width:0; display:flex; flex-direction:column; gap:12px}
+.trust-head h2{margin:0; font-family:var(--serif); font-weight:500; font-size:36px; line-height:1.15}
+.trust-head p{margin:0; font-size:16px; line-height:1.65; color:var(--muted)}
+.trust-list{flex:2 1 520px; min-width:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:22px 32px; margin:0; padding:0; list-style:none}
+.trust-list li{display:flex; gap:12px; align-items:flex-start; font-size:16px; line-height:1.55}
+.trust-list svg{flex-shrink:0; margin-top:2px}
+
+/* final */
+.final{max-width:820px; margin:0 auto; padding:96px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:22px}
+.final h2{margin:0; font-family:var(--serif); font-weight:500; font-size:clamp(38px,5vw,64px); line-height:1.05}
+.final p{margin:0; font-size:18px; line-height:1.6; color:#CFC5B6; max-width:34rem}
+footer{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; padding-top:28px; padding-bottom:40px; border-top:1px solid #2C261E; font-size:13px; line-height:1.5; color:var(--faint)}
+
+@media (max-width:640px){
+  .chat{padding:18px} .story{margin-left:0} .trust{padding:26px}
+  .hero{gap:40px; padding-top:48px; padding-bottom:64px} .section{padding-top:64px; padding-bottom:64px}
+  nav .navlink{display:none}
+  .site-header{flex-wrap:nowrap}
+  .intro-copy{bottom:40px}
+  .intro-shade{background:
+    linear-gradient(to top, var(--bg) 0%, rgba(16,14,11,.88) 22%, rgba(16,14,11,.45) 46%, rgba(16,14,11,0) 66%),
+    linear-gradient(to bottom, rgba(16,14,11,.65) 0%, rgba(16,14,11,0) 20%)}
+  .intro-side{flex-direction:row-reverse; align-items:center; width:100%; justify-content:space-between; padding-bottom:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .intro{height:auto}
+  .intro-stage{position:relative; height:100vh; height:100svh}
+  .intro-video{display:none} .intro-poster{display:block}
+  .intro-lines{display:flex; flex-direction:column; gap:6px}
+  .intro-line{opacity:1; font-size:clamp(34px,5vw,64px); max-width:none}
+  .intro-cta{opacity:1; visibility:visible}
+  .intro-side{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="wrap site-header">
+  <a class="logo" href="#top" aria-label="Glonari News, home"><b>GLONARI</b><span>NEWS</span></a>
+  <nav aria-label="Main">
+    <a class="navlink" href="#demo">Try the demo</a>
+    <a class="navlink" href="#how">How it works</a>
+    <a class="btn btn-gold btn-sm" href="#early-access">Early access</a>
+  </nav>
+</header>
+
+<main id="top">
+<section class="intro" id="intro" aria-label="Introduction">
+  <div class="intro-stage">
+    <!-- Scroll-driven film: the camera walks down a corridor into the Glonari studio and ends on Gia at her desk. -->
+    <video class="intro-video" id="introVideo" muted playsinline preload="auto" poster="images/intro-first.jpg" aria-hidden="true"></video>
+    <img class="intro-poster" src="images/intro-last.jpg" alt="Gia sitting at her desk in the Glonari News studio" width="1280" height="720">
+    <div class="intro-shade" aria-hidden="true"></div>
+    <div class="intro-copy wrap">
+      <div class="intro-lines">
+        <p class="intro-line">Beyond the headlines.</p>
+        <p class="intro-line">Understand what matters.</p>
+        <p class="intro-line">Explore the world with Gia.</p>
+        <div class="intro-cta" id="introCta">
+          <a class="btn btn-gold" href="#demo">Talk to Gia
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+      <div class="intro-side" aria-hidden="true">
+        <span class="intro-hint" id="introHint">Scroll to enter the studio</span>
+        <span class="intro-steps"><i><b></b></i><i><b></b></i><i><b></b></i></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap hero" id="meet">
+  <div class="hero-text">
+    <div class="eyebrow">Meet Gia</div>
+    <h1>The news, explained <em>for you.</em></h1>
+    <p class="lead">Gia is your personal AI assistant for the news. She follows what you care about, explains what it means for you, and tells you honestly what isn’t known yet.</p>
+    <div class="row">
+      <a class="btn btn-gold" href="#demo">Talk to Gia
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-ghost" href="#how">How it works</a>
+    </div>
+    <div class="small">By voice, video or text — whichever suits you.</div>
+  </div>
+  <figure class="hero-quote">
+    <q>Tell me what you’re planning. I’ll find the news that touches it.</q>
+    <figcaption class="who"><img src="images/gia-portrait.jpg" alt="" width="44" height="44"><span><span class="live" aria-hidden="true"></span> Gia<small>Your personal AI assistant</small></span></figcaption>
+  </figure>
+</section>
+
+<section id="demo" class="band">
+  <div class="wrap section">
+    <div class="section-head">
+      <div class="eyebrow">Try it</div>
+      <h2>Find out something that matters to you.</h2>
+      <p>Gia doesn’t start with a list of sections. She starts with you. This is a guided preview with prepared examples: the stories are illustrations, not real news. In the app, Gia works with live news from many sources.</p>
+    </div>
+    <div class="demo">
+      <aside class="gia-card">
+        <img src="images/gia-portrait.jpg" alt="Gia, the Glonari AI assistant" width="582" height="680">
+        <div class="body">
+          <div class="name"><span class="live" aria-hidden="true"></span>Gia</div>
+          <p>In the app, Gia speaks with you by voice and video. Here, try a short guided conversation.</p>
+        </div>
+      </aside>
+      <div class="chat">
+        <div class="chat-head">
+          <img class="avatar" src="images/gia-portrait.jpg" alt="" width="36" height="36">
+          <div class="who-t">Gia<small>Demo, prepared examples</small></div>
+          <button class="restart" id="restart" type="button" hidden>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4"/></svg>Start over</button>
+        </div>
+        <div class="chat-log" id="chat"></div>
+        <div class="sr-only" id="chatLive" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="wrap section">
+  <div class="section-head">
+    <div class="eyebrow">How it works</div>
+    <h2>More than a news feed. Someone to think it through with.</h2>
+  </div>
+  <div class="cards">
+    <div class="card">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#D9A54A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg>
+      <h3>She learns what matters to you</h3>
+      <p>Tell Gia what you’re planning or working on, in your own words. She works out which news touches your life — and you can change her focus anytime.</p>
+    </div>
+    <div class="card">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#D9A54A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2M8.5 11h5M11 8.5v5"/></svg>
+      <h3>She explains, not just repeats</h3>
+      <p>Gia weighs reporting from many sources, then tells you what most likely happened, why it matters to you, and what is still uncertain.</p>
+    </div>
+    <div class="card">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#D9A54A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>
+      <h3>You can simply talk</h3>
+      <p>Ask a question in the middle of a briefing, by voice or text. Gia answers, then picks up right where she left off.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="trust">
+    <div class="trust-head">
+      <h2>You stay in control.</h2>
+      <p>Gia is built on trust, not on keeping you scrolling.</p>
+    </div>
+    <ul class="trust-list">
+      <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9A54A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>Sources are always one tap away.</li>
+      <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9A54A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>She says clearly when something isn’t confirmed.</li>
+      <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9A54A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>She remembers your preferences only with your permission.</li>
+      <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9A54A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>See what she knows about you — and change or delete it anytime.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="early-access" class="band" style="border-bottom:0">
+  <div class="final">
+    <h2>What would <em>you</em> ask Gia?</h2>
+    <p>Glonari News is opening to early members. Be among the first to talk the news through with Gia.</p>
+    <!-- Replace href with your sign-up form or link -->
+    <a class="btn btn-gold" href="#early-access">Request early access</a>
+  </div>
+  <footer class="wrap">
+    <span>© 2026 Glonari. Gia is an AI assistant.</span>
+    <span>Stories in the demo are illustrative samples, not live news.</span>
+  </footer>
+</section>
+</main>
+
+<script>
+/* ---------- Gia demo: guided conversation with prepared examples ---------- */
+const GIA_SITUATIONS = {
+  home: {
+    label: "Buying an apartment in Valencia next year",
+    plan: "Buying an apartment in Valencia next year",
+    topics: [
+      ["Mortgage rates in Spain", "They set your monthly payment."],
+      ["Housing prices in Valencia", "They decide what your budget buys."],
+      ["Rules for foreign buyers", "They shape what you can sign and when."],
+      ["Euro exchange rate", "If you earn in another currency, it moves your budget."]
+    ],
+    tag: "Spanish housing",
+    title: "Spanish banks trim rates on new fixed mortgages",
+    body: "Several banks lower rates on new fixed-rate home loans. Prices in big cities, Valencia included, keep rising, but more slowly than a year earlier.",
+    sources: "Central bank statements, the national statistics office, published bank offers and property market reports.",
+    unknown: "Whether rates keep falling over the next year, and whether prices in Valencia cool or speed up again.",
+    views: "Some analysts see a better window for buyers ahead. Others expect strong demand and little new building to keep prices climbing.",
+    meaning: "Mildly good news for you. If rates keep easing, the same monthly payment could cover a slightly bigger loan next year. But prices are still rising, and it’s too early to know which will move faster.",
+    step: "One useful step now: ask a lender for an indicative offer, so you have a baseline to compare against.",
+    asks: ["What would a small rate change do to my monthly payment?", "Which parts of Valencia are changing fastest?", "What should I check before signing as a foreign buyer?"]
+  },
+  business: {
+    label: "Starting a small online business",
+    plan: "Starting a small online business",
+    topics: [
+      ["Rules for online sellers", "They decide what your listings must include."],
+      ["Small-business funding", "It affects how you can start."],
+      ["AI tools for small teams", "The practical ones can save you hours."],
+      ["Consumer spending", "It hints at how much demand to expect."]
+    ],
+    tag: "Online selling",
+    title: "Online sellers face stricter product-information rules",
+    body: "New consumer-protection rules ask sellers to show clearer safety details and who is responsible for each product. Large marketplaces start passing this on to small sellers.",
+    sources: "Official regulatory guidance, marketplace seller notices, consumer-protection agencies and small-business associations.",
+    unknown: "How strictly the rules will apply to very small sellers. Official guidance is still being published.",
+    views: "Consumer groups say clear rules build trust in honest sellers. Small-business groups worry the paperwork falls hardest on one-person companies.",
+    meaning: "Your timing helps. It’s much easier to build these details into your listings from day one than to fix hundreds of them later.",
+    step: "One useful step now: add safety and responsibility fields to your listing template before you launch.",
+    asks: ["Which rules apply if I sell to other countries?", "Is this a good moment to look for funding?", "What are people buying less of this year?"]
+  },
+  trip: {
+    label: "Traveling to Lisbon next month",
+    plan: "Traveling to Lisbon next month",
+    topics: [
+      ["Flights and Lisbon airport", "Delays here hit your trip first."],
+      ["Strikes and transport in Portugal", "They can change how you get around."],
+      ["Weather and events in Lisbon", "They shape what your days look like."],
+      ["Entry requirements", "Rules can change before you fly."]
+    ],
+    tag: "Travel in Portugal",
+    title: "Transport unions in Portugal announce possible strike days",
+    body: "Unions for some airport and rail workers announce possible strikes in the coming weeks over pay. Talks with employers continue.",
+    sources: "Union announcements, airport and rail operator notices, government statements and travel industry updates.",
+    unknown: "Whether the strikes happen at all, on which days, and which services would stop.",
+    views: "Unions call it a last resort after long talks. Employers and tourism groups say a deal is close.",
+    meaning: "Nothing is confirmed, so there’s no reason to change your plans today.",
+    step: "Worth checking now: whether your ticket allows free changes, and a backup way from the airport into the city.",
+    asks: ["Will the weather be good while I’m there?", "Is anything big happening in Lisbon that week?", "What can I do if my flight is cancelled?"]
+  }
+};
+
+const AVATAR = "images/gia-portrait.jpg";
+const chat = document.getElementById("chat");
+const live = document.getElementById("chatLive");
+const restartBtn = document.getElementById("restart");
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let S, timer = null;
+
+function fresh() {
+  return {
+    log: [
+      { kind: "gia", text: "Hi, I’m Gia. Most news apps ask which topics you like. I’d rather ask about you." },
+      { kind: "gia", text: "What are you planning these days?" }
+    ],
+    stage: "situation", typing: false, sit: null, panel: null,
+    memory: null, off: {}, newFrom: -1
+  };
+}
+const esc = s => { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; };
+const X = () => GIA_SITUATIONS[S.sit];
+
+// One step of the conversation: the person's reply, a short pause, then Gia.
+function exchange(you, replies, next, extra) {
+  if (you) S.log.push({ kind: "you", text: you });
+  S.typing = true; S.stage = "wait"; render(true);
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    S.newFrom = S.log.length;
+    S.log.push(...replies); S.typing = false; S.stage = next;
+    Object.assign(S, extra || {});
+    render(true);
+    const said = replies.filter(r => r.kind === "gia").map(r => r.text).join(" ");
+    if (said) live.textContent = "Gia: " + said;
+  }, reduceMotion ? 250 : 700);
+}
+
+const actions = {
+  situation: k => exchange(GIA_SITUATIONS[k].label,
+    [{ kind: "gia", text: "Thanks. From that alone, here’s what I’d follow for you:" }, { kind: "topics" }],
+    "topics", { sit: k }),
+  story: () => exchange("Show me a story",
+    [{ kind: "gia", text: "Here’s the kind of story I’d bring you, in a few lines." }, { kind: "story" }],
+    "story"),
+  meaning: () => exchange("What does this mean for me?",
+    [{ kind: "answer" }, { kind: "gia", text: "Would you like me to remember your plan, so I can keep following it?" }],
+    "offer"),
+  remember: () => exchange("Yes, remember it",
+    [{ kind: "gia", text: "Here’s how it would look in My Gia Memory. You can change it anytime." }, { kind: "memory" }],
+    "ask", { memory: "preview" }),
+  decline: () => exchange("Not now",
+    [{ kind: "gia", text: "No problem. I only remember things when you ask me to." }],
+    "ask"),
+  ask: () => exchange("What else can I ask you?",
+    [{ kind: "gia", text: "Anything, in your own words. For your plan, you could ask things like:" }, { kind: "asks" },
+     { kind: "gia", text: "In the app, I answer with live news and show my sources. Ask me by voice or text." }],
+    "done"),
+  panel: name => { S.panel = S.panel === name ? null : name; render(false); },
+  toggle: topic => { S.off[topic] = !S.off[topic]; render(false); },
+  forget: () => { S.memory = "forgotten"; render(false); },
+  restart: () => { clearTimeout(timer); S = fresh(); live.textContent = ""; render(false); chat.closest(".chat").scrollIntoView({ block: "start", behavior: reduceMotion ? "auto" : "smooth" }); }
+};
+
+function choices() {
+  switch (S.stage) {
+    case "situation": return Object.keys(GIA_SITUATIONS).map(k => [GIA_SITUATIONS[k].label, "situation", k]);
+    case "topics": return [["Show me a story", "story", "", true]];
+    case "story": return [["What does this mean for me?", "meaning", "", true]];
+    case "offer": return [["Yes, remember it", "remember", "", true], ["Not now", "decline"]];
+    case "ask": return [["What else can I ask you?", "ask", "", true]];
+    default: return [];
+  }
+}
+
+const giaMsg = text => `<div class="msg-gia"><img class="avatar" src="${AVATAR}" alt=""><div class="bubble-gia">${esc(text)}</div></div>`;
+
+function topicsHTML() {
+  return `<div class="block"><ul class="topics">${X().topics.map(([t, why]) =>
+    `<li><b>${esc(t)}</b><span>${esc(why)}</span></li>`).join("")}</ul>
+    <p class="note">You didn’t pick these topics. Gia worked them out from your plan.</p></div>`;
+}
+
+function storyHTML() {
+  const t = X(), p = S.panel;
+  const tab = (id, label) => `<button class="tab" type="button" data-act="panel" data-arg="${id}" aria-expanded="${p === id}" aria-controls="story-panel">${label}</button>`;
+  const text = { sources: t.sources, unknown: t.unknown, views: t.views }[p];
+  const extra = p === "sources" ? `<p class="note">In the app, each source opens with its publisher, date and link. Here, these are example source types.</p>` : "";
+  return `<article class="block story">
+    <div class="block-label">${esc(t.tag)} <span>Sample story, not real news</span></div>
+    <h3>${esc(t.title)}</h3><p>${esc(t.body)}</p>
+    <div class="tabs">${tab("sources", "Sources")}${tab("unknown", "What’s still unknown")}${tab("views", "Other views")}</div>
+    ${p ? `<div class="panel" id="story-panel"><p>${esc(text)}</p>${extra}</div>` : ""}
+  </article>`;
+}
+
+function answerHTML() {
+  const t = X();
+  return `<div class="block answer" aria-label="What this means for your plan">
+    <div class="block-label">What this means for your plan</div>
+    <p>${esc(t.meaning)}</p><p class="step">${esc(t.step)}</p></div>`;
+}
+
+function memoryHTML() {
+  const t = X();
+  if (S.memory === "forgotten") return `<div class="block memory"><div class="block-label">My Gia Memory <span>Preview</span></div>
+    <p>Forgotten. In the app, nothing about this plan would be kept.</p></div>`;
+  return `<div class="block memory"><div class="block-label">My Gia Memory <span>Preview, nothing is saved in this demo</span></div>
+    <div class="plan">${esc(t.plan)}</div>
+    <p class="note">Topics Gia would follow. Tap one to turn it off or on.</p>
+    <div class="toggles">${t.topics.map(([topic]) =>
+      `<button class="toggle" type="button" data-act="toggle" data-arg="${esc(topic)}" aria-pressed="${!S.off[topic]}">${esc(topic)}</button>`).join("")}</div>
+    <button class="linkish" type="button" data-act="forget">Forget this plan</button></div>`;
+}
+
+function asksHTML() {
+  return `<div class="block"><ul class="ask-list">${X().asks.map(q => `<li>“${esc(q)}”</li>`).join("")}</ul></div>`;
+}
+
+function render(advance) {
+  const hadFocus = chat.contains(document.activeElement);
+  let h = "";
+  S.log.forEach((m, i) => {
+    const mark = i === S.newFrom ? ` data-new` : "";
+    let part = "";
+    if (m.kind === "gia") part = giaMsg(m.text);
+    if (m.kind === "you") part = `<div class="msg-you"><div class="bubble-you">${esc(m.text)}</div></div>`;
+    if (m.kind === "topics") part = topicsHTML();
+    if (m.kind === "story") part = storyHTML();
+    if (m.kind === "answer") part = answerHTML();
+    if (m.kind === "memory") part = memoryHTML();
+    if (m.kind === "asks") part = asksHTML();
+    h += mark ? part.replace(/^<(\w+)/, `<$1${mark}`) : part;
+  });
+  if (S.typing) h += `<div class="msg-gia" data-typing><img class="avatar" src="${AVATAR}" alt=""><div class="bubble-gia typing" aria-label="Gia is typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>`;
+  const c = choices();
+  if (!S.typing && c.length) h += `<div class="choices">` + c.map(([label, act, arg, primary]) =>
+    `<button class="chip${primary ? " primary" : ""}" type="button" data-act="${act}" data-arg="${arg || ""}">${esc(label)}</button>`).join("") + `</div>`;
+  if (S.stage === "done" && !S.typing) h += `<div class="choices">
+    <button class="chip" type="button" data-act="restart">Try another plan</button>
+    <a class="chip primary" href="#early-access">Continue in the app</a></div>`;
+  chat.innerHTML = h;
+  restartBtn.hidden = S.sit === null && S.stage === "situation";
+
+  if (!advance) return;
+  // Keep the newest part of the conversation in view, without jumping on small updates.
+  const target = chat.querySelector(S.typing ? "[data-typing]" : "[data-new]");
+  if (target && target.getBoundingClientRect().top > innerHeight * .62)
+    target.scrollIntoView({ block: S.typing ? "center" : "start", behavior: reduceMotion ? "auto" : "smooth" });
+  if (hadFocus && !S.typing) { const b = chat.querySelector(".choices .chip"); if (b) b.focus({ preventScroll: true }); }
+}
+
+chat.addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]");
+  if (b) {
+    const panelFocus = b.dataset.act === "panel" || b.dataset.act === "toggle" ? [b.dataset.act, b.dataset.arg] : null;
+    actions[b.dataset.act](b.dataset.arg);
+    if (panelFocus) { const again = chat.querySelector(`button[data-act="${panelFocus[0]}"][data-arg="${CSS.escape(panelFocus[1])}"]`); if (again) again.focus({ preventScroll: true }); }
+  }
+});
+restartBtn.addEventListener("click", () => actions.restart());
+
+S = fresh(); render(false);
+
+/* ---------- Intro: video scrubbed by scroll ---------- */
+(function () {
+  const intro = document.getElementById("intro");
+  const video = document.getElementById("introVideo");
+  const lines = [...intro.querySelectorAll(".intro-line")];
+  const bars = [...intro.querySelectorAll(".intro-steps b")];
+  const cta = document.getElementById("introCta");
+  const hint = document.getElementById("introHint");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  // Lighter file on phones and data-saver connections.
+  const small = matchMedia("(max-width: 760px)").matches || (navigator.connection && navigator.connection.saveData);
+  // MP4 (H.264, every frame a keyframe) scrubs best; WebM is the fallback for browsers without H.264.
+  const ext = video.canPlayType('video/mp4; codecs="avc1.640028"') ? "mp4" : "webm";
+  video.src = `video/gia-intro${small ? "-small" : ""}.${ext}`;
+  video.load();
+
+  // iOS Safari only paints seeked frames after the video has been "played" once.
+  const unlock = () => { video.play().then(() => video.pause()).catch(() => {}); };
+  addEventListener("touchstart", unlock, { once: true, passive: true });
+
+  // Where each line lives on the scroll (0 → 1 across the intro).
+  const SEG = [[0, .30], [.35, .63], [.69, 1]];
+  const VIDEO_END = .88;   // film finishes here; the last frame holds under line 3
+  const FADE = .06;
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const ease = t => t * t * (3 - 2 * t);
+
+  let duration = 8, current = 0, active = false, raf = 0;
+  video.addEventListener("loadedmetadata", () => { duration = video.duration || 8; });
+
+  function progress() {
+    const total = intro.offsetHeight - innerHeight;
+    return total > 0 ? clamp(-intro.getBoundingClientRect().top / total) : 0;
+  }
+
+  function frame() {
+    const p = progress();
+
+    // Video: ease toward the target time so scrubbing feels smooth.
+    const target = clamp(p / VIDEO_END) * Math.max(0, duration - .05);
+    current += (target - current) * .2;
+    if (Math.abs(target - current) < .002) current = target;
+    if (video.readyState >= 1 && !video.seeking && Math.abs(video.currentTime - current) > .015) video.currentTime = current;
+
+    // Lines crossfade with a small lift.
+    SEG.forEach(([a, b], i) => {
+      const fin = i === 0 ? 1 : ease(clamp((p - a) / FADE));
+      const fout = i === SEG.length - 1 ? 1 : ease(clamp((b - p) / FADE));
+      const o = Math.min(fin, fout);
+      const dir = p < (a + b) / 2 ? 1 : -1;
+      lines[i].style.opacity = o;
+      lines[i].style.transform = `translateY(${(1 - o) * 18 * dir}px)`;
+      bars[i].style.transform = `scaleX(${clamp((p - a) / (b - a))})`;
+    });
+    cta.classList.toggle("on", p > SEG[2][0] + .04);
+    hint.style.opacity = p > .03 ? 0 : 1;
+
+    raf = active ? requestAnimationFrame(frame) : 0;
+  }
+
+  // Run the loop only while the intro is on screen.
+  new IntersectionObserver(([e]) => {
+    active = e.isIntersecting;
+    if (active && !raf) raf = requestAnimationFrame(frame);
+  }).observe(intro);
+})();
+</script>
+</body>
+</html>
