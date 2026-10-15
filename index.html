@@ -43,7 +43,7 @@ nav .navlink{color:var(--soft); text-decoration:none; font-size:15px; font-weigh
 nav .navlink:hover{color:var(--text)}
 
 /* intro: scroll-driven video */
-.intro{position:relative; height:440vh; background:#000}
+.intro{position:relative; height:500vh; background:#000}
 .intro-stage{position:sticky; top:0; height:100vh; height:100svh; overflow:hidden}
 .intro-video,.intro-poster{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 50%}
 .intro-poster{display:none}
@@ -223,7 +223,7 @@ footer{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; pa
   <div class="intro-stage">
     <!-- Scroll-driven film: the camera walks down a corridor into the Glonari studio and ends on Gia at her desk. -->
     <video class="intro-video" id="introVideo" muted playsinline preload="auto" poster="images/intro-first.jpg" aria-hidden="true"></video>
-    <img class="intro-poster" src="images/intro-last.jpg" alt="Gia sitting at her desk in the Glonari News studio" width="1280" height="720">
+    <img class="intro-poster" src="images/intro-last.jpg" alt="Gia sitting at her desk in the Glonari News studio" width="1344" height="768">
     <div class="intro-shade" aria-hidden="true"></div>
     <div class="intro-copy wrap">
       <div class="intro-lines">
@@ -588,14 +588,15 @@ S = fresh(); render(false);
   addEventListener("touchstart", unlock, { once: true, passive: true });
 
   // Where each line lives on the scroll (0 → 1 across the intro).
-  const SEG = [[0, .30], [.35, .63], [.69, 1]];
-  const VIDEO_END = .88;   // film finishes here; the last frame holds under line 3
+  // Film beats (s): corridor 0–3.5 → line 1; studio + Gia walks in 4–7 → line 2; Gia seated 8–end → line 3.
+  const SEG = [[0, .29], [.33, .58], [.66, 1]];
+  const VIDEO_END = .84;   // film finishes here; the last frame holds under line 3
   const FADE = .06;
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const ease = t => t * t * (3 - 2 * t);
 
-  let duration = 8, current = 0, active = false, raf = 0;
-  video.addEventListener("loadedmetadata", () => { duration = video.duration || 8; });
+  let duration = 10.1, current = 0, active = false, raf = 0;
+  video.addEventListener("loadedmetadata", () => { duration = video.duration || 10.1; });
 
   function progress() {
     const total = intro.offsetHeight - innerHeight;
