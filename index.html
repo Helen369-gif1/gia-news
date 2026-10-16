@@ -12,7 +12,7 @@
 :root{
   --bg:#100E0B; --bg2:#17140F; --surface:#1E1A14; --surface2:#2A241C; --card:#1A1713;
   --line:#332C22; --line2:#4A4033; --text:#F3EDE3; --soft:#D6CCBD; --muted:#BFB4A4; --faint:#A89D8C;
-  --gold:#D9A54A; --gold-light:#E2B55E; --on-gold:#1A1408; --live:#7FCB8A;
+  --space:clamp(96px,10vw,150px); --gold:#D9A54A; --gold-light:#E2B55E; --on-gold:#1A1408; --live:#7FCB8A;
   --serif:Newsreader, Georgia, "Times New Roman", serif;
   --sans:Manrope, "Segoe UI", system-ui, -apple-system, sans-serif;
   color-scheme: dark;
@@ -35,9 +35,20 @@ a{color:var(--gold-light)} a:hover{color:#F3D08C}
 
 /* header (sits over the intro video) */
 .site-header{position:absolute; top:env(safe-area-inset-top,0px); left:0; right:0; z-index:5; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; padding-top:22px; padding-bottom:22px}
-.logo{display:flex; align-items:baseline; gap:10px; text-decoration:none; color:var(--text)}
+.logo{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--text)}
+.logo picture{display:block; flex:0 0 auto; line-height:0}
+.logo-mark{display:block; width:36px; height:36px}
+.logo-word{display:flex; align-items:baseline; gap:10px}
 .logo b{font-family:var(--serif); font-size:24px; font-weight:600; letter-spacing:.08em}
-.logo span{font-size:13px; font-weight:600; letter-spacing:.22em; color:var(--gold)}
+.logo-word > span{font-size:13px; font-weight:600; letter-spacing:.22em; color:var(--gold)}
+@media (max-width:900px){
+  .logo{gap:9px} .logo-mark{width:30px; height:30px}
+  .logo b{font-size:20px} .logo-word{gap:8px} .logo-word > span{font-size:11px; letter-spacing:.18em}
+}
+@media (max-width:640px){
+  .site-header .btn-sm{min-height:40px; padding:10px 16px; font-size:14px}
+}
+@media (max-width:360px){ .site-header{gap:10px} .logo-mark{width:26px; height:26px} .logo b{font-size:18px; letter-spacing:.06em} .logo-word > span{letter-spacing:.14em} }
 nav{display:flex; flex-wrap:wrap; align-items:center; gap:24px}
 nav .navlink{color:var(--soft); text-decoration:none; font-size:15px; font-weight:500; text-shadow:0 1px 8px rgba(0,0,0,.6)}
 nav .navlink:hover{color:var(--text)}
@@ -65,7 +76,7 @@ nav .navlink:hover{color:var(--text)}
 .intro-steps i b{display:block; height:100%; width:100%; background:var(--gold); transform-origin:left; transform:scaleX(0)}
 
 /* meet Gia (after the intro) */
-.hero{display:flex; flex-wrap:wrap; align-items:flex-end; gap:56px 72px; padding-top:72px; padding-bottom:96px}
+.hero{display:flex; flex-wrap:wrap; align-items:flex-end; gap:56px 72px; padding-top:96px; padding-bottom:var(--space)}
 .hero-text{flex:1 1 520px; min-width:0; display:flex; flex-direction:column; gap:28px}
 .hero h1{margin:0; font-family:var(--serif); font-weight:500; font-size:clamp(40px,5.2vw,68px); line-height:1.04; letter-spacing:-.01em}
 .hero h1 em, .final h2 em{color:var(--gold-light); font-style:italic}
@@ -82,7 +93,7 @@ nav .navlink:hover{color:var(--text)}
 
 /* demo */
 .band{background:var(--bg2); border-top:1px solid #2C261E; border-bottom:1px solid #2C261E}
-.section{padding-top:88px; padding-bottom:88px; display:flex; flex-direction:column; gap:40px}
+.section{padding-top:var(--space); padding-bottom:var(--space); display:flex; flex-direction:column; gap:40px}
 .section-head{display:flex; flex-direction:column; gap:14px; max-width:46rem}
 .section-head h2{margin:0; font-family:var(--serif); font-weight:500; font-size:clamp(34px,4vw,52px); line-height:1.08}
 .section-head p{margin:0; font-size:16px; line-height:1.6; color:var(--muted)}
@@ -166,12 +177,90 @@ a.chip.primary:hover{color:var(--on-gold)}
   .chip{flex:1 1 100%; text-align:center; justify-content:center}
 }
 
+/* explore: bento of example topics */
+.explore{padding-top:0; padding-bottom:var(--space); display:flex; flex-direction:column; gap:36px}
+.explore-head{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px 40px}
+.explore-head h2{margin:0; font-family:var(--serif); font-weight:500; font-size:clamp(34px,4vw,52px); line-height:1.08; max-width:18ch}
+.explore-head p{margin:0; max-width:30rem; font-size:16px; line-height:1.6; color:var(--muted)}
+.bento{display:grid; grid-template-columns:1fr 1.9fr 1fr; grid-auto-rows:clamp(220px,21vw,280px); gap:14px}
+.bento .tile:nth-child(1){grid-column:2; grid-row:1 / span 2}
+.bento .tile:nth-child(2){grid-column:1; grid-row:1}
+.bento .tile:nth-child(3){grid-column:1; grid-row:2}
+.bento .tile:nth-child(4){grid-column:3; grid-row:1}
+.bento .tile:nth-child(5){grid-column:3; grid-row:2}
+.tile{position:relative; overflow:hidden; border-radius:22px; background:#2A241C; isolation:isolate}
+.slide{position:absolute; inset:0; opacity:0; transition:opacity .9s ease; background:var(--ph)}
+.slide.on{opacity:1}
+.slide video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.slide video.missing{display:none}
+.slide::after{content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(10,8,6,.78) 0%, rgba(10,8,6,.25) 42%, rgba(10,8,6,0) 64%); pointer-events:none}
+.slide .ph-name{position:absolute; top:14px; right:14px; z-index:2; font:600 12px var(--sans); color:rgba(255,255,255,.85); background:rgba(0,0,0,.35); padding:5px 10px; border-radius:999px; display:none}
+.slide video.missing ~ .ph-name{display:block}
+.slide .cap{position:absolute; left:0; right:0; bottom:0; z-index:2; padding:20px 22px; display:flex; flex-direction:column; gap:8px}
+.slide .tag{align-self:flex-start; font:700 12px var(--sans); letter-spacing:.06em; text-transform:uppercase; color:#1A1408; background:rgba(243,237,227,.92); padding:6px 11px; border-radius:999px}
+.slide .line{margin:0; font-family:var(--serif); font-size:clamp(19px,1.7vw,24px); line-height:1.22; color:#FFF; text-wrap:balance; text-shadow:0 1px 12px rgba(0,0,0,.35)}
+.tile:nth-child(1) .slide .line{font-size:clamp(24px,2.6vw,36px); max-width:20ch}
+.tile:nth-child(1) .slide .cap{padding:28px 30px}
+.explore-note{font-size:14px; color:var(--faint)}
+@media (max-width:860px){
+  .bento{grid-template-columns:1fr 1fr; grid-auto-rows:auto}
+  .bento .tile{grid-column:auto !important; grid-row:auto !important; aspect-ratio:1/1}
+  .bento .tile:nth-child(1){grid-column:1 / -1 !important; aspect-ratio:4/3}
+}
+@media (max-width:520px){
+  .bento{gap:10px}
+  .slide .cap{padding:14px}
+  .slide .line{font-size:16px}
+  .slide .tag{font-size:11px; padding:5px 9px}
+}
+@media (prefers-reduced-motion:reduce){ .slide{transition:none} }
+
+/* daily brief: deep espresso with a soft studio glow */
+.brief{position:relative; color:var(--text); border-top:1px solid #3A2C1C; border-bottom:1px solid #3A2C1C;
+  background:
+    radial-gradient(ellipse 60% 55% at 50% 72%, rgba(217,165,74,.17) 0%, rgba(217,165,74,0) 70%),
+    radial-gradient(ellipse 40% 35% at 85% 10%, rgba(217,165,74,.07) 0%, rgba(217,165,74,0) 70%),
+    linear-gradient(180deg, #1F1710 0%, #18120C 100%)}
+.brief + .wrap{padding-top:var(--space)}
+.brief .section{padding-top:var(--space); padding-bottom:var(--space)}
+.brief .section-head p{color:#CDBFA9}
+.brief h2{text-wrap:balance}
+.brief-grid{display:grid; grid-template-columns:1.35fr 1fr 1fr; gap:18px; align-items:stretch}
+.bcard{background:linear-gradient(180deg,#2E241A 0%,#271E15 100%); border:1px solid #4A3A28; border-radius:24px; padding:26px; display:flex; flex-direction:column; gap:18px; box-shadow:0 24px 60px -30px rgba(0,0,0,.6)}
+.bcard h3{margin:0; font-family:var(--serif); font-weight:500; font-size:26px; line-height:1.2; color:var(--text)}
+.bcard > p{margin:0; font-size:16px; line-height:1.6; color:#C9BCA8}
+.bcard .push{margin-top:auto}
+.player{position:relative; border-radius:16px; overflow:hidden; aspect-ratio:16/9; background:linear-gradient(135deg,#4A3920,#1A140E)}
+.player video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.player video.missing{display:none}
+.player .ph-name{position:absolute; top:12px; right:12px; font:600 12px var(--sans); color:rgba(255,255,255,.85); background:rgba(0,0,0,.35); padding:5px 10px; border-radius:999px; display:none}
+.player video.missing ~ .ph-name{display:block}
+.player .bar{position:absolute; left:14px; right:14px; bottom:14px; display:flex; gap:5px}
+.player .bar i{flex:1; height:3px; border-radius:2px; background:rgba(255,255,255,.35)}
+.player .bar i.done{background:#fff}
+.player .bar i.now{background:linear-gradient(to right,#fff 45%, rgba(255,255,255,.35) 45%)}
+.player .count{position:absolute; left:14px; top:12px; font:700 12px var(--sans); color:#fff; background:rgba(0,0,0,.45); padding:5px 10px; border-radius:999px}
+.bstory{display:flex; flex-direction:column; gap:6px; padding-top:2px}
+.bstory .meta{font-size:13px; font-weight:700; color:var(--gold-light)}
+.bstory .meta span{font-weight:500; color:var(--faint)}
+.bstory b{font-family:var(--serif); font-weight:500; font-size:21px; line-height:1.3; color:var(--text)}
+.orig{display:inline-flex; align-items:center; gap:6px; align-self:flex-start; font-size:15px; font-weight:700; color:var(--gold-light); text-decoration:underline; text-underline-offset:3px}
+.bstory small{font-size:13px; color:var(--faint)}
+.convo{display:flex; flex-direction:column; gap:10px; flex:1}
+.b-you,.b-gia{max-width:88%; padding:11px 15px; font-size:15px; line-height:1.5; border-radius:16px}
+.b-you{align-self:flex-end; background:var(--gold); color:var(--on-gold); font-weight:600; border-radius:16px 4px 16px 16px}
+.b-gia{align-self:flex-start; background:#3D3125; color:var(--text); border-radius:4px 16px 16px 16px}
+.b-lang{display:block; font-size:11px; font-weight:700; letter-spacing:.08em; opacity:.6; margin-bottom:2px}
+.resume{align-self:flex-start; display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:700; color:var(--gold-light); background:rgba(217,165,74,.14); border:1px solid rgba(217,165,74,.3); padding:8px 13px; border-radius:14px}
+@media (max-width:1000px){ .brief-grid{grid-template-columns:1fr 1fr} .brief-grid .bcard:first-child{grid-column:1 / -1} }
+@media (max-width:640px){ .brief-grid{grid-template-columns:1fr} .bcard{padding:20px} }
+
 /* how */
 .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px}
 .card{background:var(--card); border:1px solid #2E281F; border-radius:22px; padding:30px; display:flex; flex-direction:column; gap:14px}
 .card h3{margin:0; font-family:var(--serif); font-weight:500; font-size:26px; line-height:1.2}
 .card p{margin:0; font-size:16px; line-height:1.65; color:var(--muted)}
-.trust{border:1px solid #2E281F; border-radius:26px; padding:40px; display:flex; flex-wrap:wrap; gap:36px; align-items:flex-start; margin-bottom:96px}
+.trust{border:1px solid #2E281F; border-radius:26px; padding:40px; display:flex; flex-wrap:wrap; gap:36px; align-items:flex-start; margin-bottom:var(--space)}
 .trust-head{flex:1 1 280px; min-width:0; display:flex; flex-direction:column; gap:12px}
 .trust-head h2{margin:0; font-family:var(--serif); font-weight:500; font-size:36px; line-height:1.15}
 .trust-head p{margin:0; font-size:16px; line-height:1.65; color:var(--muted)}
@@ -180,14 +269,14 @@ a.chip.primary:hover{color:var(--on-gold)}
 .trust-list svg{flex-shrink:0; margin-top:2px}
 
 /* final */
-.final{max-width:820px; margin:0 auto; padding:96px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:22px}
+.final{max-width:820px; margin:0 auto; padding:var(--space) 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:22px}
 .final h2{margin:0; font-family:var(--serif); font-weight:500; font-size:clamp(38px,5vw,64px); line-height:1.05}
 .final p{margin:0; font-size:18px; line-height:1.6; color:#CFC5B6; max-width:34rem}
 footer{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; padding-top:28px; padding-bottom:40px; border-top:1px solid #2C261E; font-size:13px; line-height:1.5; color:var(--faint)}
 
 @media (max-width:640px){
   .chat{padding:18px} .story{margin-left:0} .trust{padding:26px}
-  .hero{gap:40px; padding-top:48px; padding-bottom:64px} .section{padding-top:64px; padding-bottom:64px}
+  .hero{gap:40px; padding-top:64px}
   nav .navlink{display:none}
   .site-header{flex-wrap:nowrap}
   .intro-copy{bottom:40px}
@@ -205,15 +294,79 @@ footer{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; pa
   .intro-cta{opacity:1; visibility:visible}
   .intro-side{display:none}
 }
+
+/* REDESIGN: one editorial cinematic screen. Other sections and intro unchanged. */
+.how-redesigned{gap:26px;padding-top:clamp(76px,7vw,110px);padding-bottom:clamp(86px,8vw,118px)}
+.how-redesigned .section-head{max-width:790px;gap:10px}
+.how-redesigned .section-head h2{font-size:clamp(34px,3.65vw,51px);line-height:1.07}
+.how-editorial{display:grid;grid-template-columns:1.18fr 1fr .96fr;gap:14px;align-items:stretch}
+.how-scene{position:relative;height:clamp(470px,39vw,530px);overflow:hidden;border-radius:22px;isolation:isolate;border:1px solid rgba(255,225,168,.18);background:#211b14;box-shadow:0 16px 50px rgba(0,0,0,.15)}
+.how-scene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.3s cubic-bezier(.2,.65,.15,1),filter 1s;filter:saturate(1.13)}
+.how-scene-primary img{object-position:49% 50%}
+.how-scene-analysis img{object-position:50% 50%}
+.how-scene-ask img{object-position:53% 50%}
+.how-scene::after{content:'';position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(8,8,7,.3) 0%,rgba(8,8,7,0) 18%,rgba(8,8,7,.06) 38%,rgba(8,8,7,.56) 64%,rgba(8,7,6,.92) 100%)}
+.how-scene:hover img{transform:scale(1.065);filter:saturate(1.24)}
+.how-scene-top{position:absolute;z-index:2;top:22px;left:22px;right:22px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;color:#fff;font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;text-shadow:0 1px 5px #000}
+.how-kicker{display:flex;flex-direction:column;gap:6px;max-width:70%}
+.how-index{color:#F0BE71;font-size:10px;letter-spacing:.18em}
+.how-kicker b{font:700 11px/1.2 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.88)}
+.how-copy{position:absolute;z-index:2;left:22px;right:22px;bottom:22px;display:flex;flex-direction:column;gap:12px}
+.how-copy h3{margin:0;font:500 clamp(25px,2.15vw,31px)/1.08 var(--serif);color:white;text-shadow:0 2px 18px rgba(0,0,0,.4)}
+.how-copy p{margin:0;max-width:34ch;color:#F1E5D4;font:400 14px/1.62 var(--sans);text-shadow:0 1px 10px rgba(0,0,0,.35)}
+.how-orbit{width:25px;height:25px;border:1px solid rgba(239,193,126,.85);border-radius:50%;position:relative;animation:how-turn 12s linear infinite;flex:0 0 auto;margin-top:2px}
+.how-orbit::before{content:'';position:absolute;top:-4px;left:10px;width:7px;height:7px;border-radius:50%;background:#F8C16A}
+.how-cross{font-size:24px;color:#F6BD68;animation:how-turn 24s linear infinite;flex:0 0 auto;line-height:1}
+.how-sound{height:22px;display:flex;align-items:center;gap:3px;flex:0 0 auto;margin-top:1px}
+.how-sound i{width:2px;height:7px;border-radius:4px;background:#F1BF7A;animation:how-wave 1.5s ease-in-out infinite alternate}
+.how-sound i:nth-child(2),.how-sound i:nth-child(4){animation-delay:.25s}.how-sound i:nth-child(3){animation-delay:.5s}
+@keyframes how-turn{to{transform:rotate(360deg)}}
+@keyframes how-wave{to{height:20px}}
+@media(max-width:900px){.how-editorial{grid-template-columns:1fr 1fr}.how-scene-primary{grid-column:1 / -1}.how-scene{height:480px}.how-scene-primary{height:460px}.how-copy h3{font-size:28px}}
+@media(max-width:580px){.how-editorial{grid-template-columns:1fr}.how-scene-primary{grid-column:auto}.how-scene{height:460px}.how-scene-top{top:18px;left:18px;right:18px}.how-copy{left:18px;right:18px;bottom:18px}.how-redesigned .section-head h2{font-size:38px}}
+@media(prefers-reduced-motion:reduce){.how-scene img{transition:none}.how-orbit,.how-cross,.how-sound i{animation:none}}
+
+
+/* ---------- Quiet motion: Daily Brief (6), You stay in control (7), final (8) ----------
+   Start states apply only when the script adds html.motion (JS on, reduced motion off),
+   so without JS or with reduced motion everything shows complete at once.
+   Only opacity and transform change, so nothing pushes the layout. */
+:root{--ease-soft:cubic-bezier(.22,.61,.36,1); --rise:10px; --rise-lg:24px}
+@media (max-width:640px){:root{--rise:6px; --rise-lg:14px}}
+
+/* 6. Brief: the story progress fills, chat lines arrive one by one */
+.player .bar i.now{position:relative; overflow:hidden; background:rgba(255,255,255,.35)}
+.player .bar i.now::after{content:""; position:absolute; inset:0; width:45%; background:#fff; transform-origin:left center}
+html.motion .player .bar i.now::after{transform:scaleX(0)}
+html.motion .bcard.is-in .player .bar i.now::after{transform:scaleX(1); transition:transform 2.4s var(--ease-soft) .5s}
+html.motion .bcard .convo > *{opacity:0; transform:translateY(var(--rise))}
+html.motion .bcard.is-in .convo > *{opacity:1; transform:none;
+  transition:opacity .45s var(--ease-soft), transform .45s var(--ease-soft);
+  transition-delay:calc(.3s + var(--i,0) * .6s)}
+
+/* 7. Trust: the gold checkmarks draw themselves in turn */
+html.motion .trust-list svg path{stroke-dasharray:1; stroke-dashoffset:1}
+html.motion .trust.is-in .trust-list svg path{stroke-dashoffset:0;
+  transition:stroke-dashoffset .5s var(--ease-soft); transition-delay:calc(.2s + var(--i,0) * .15s)}
+
+/* 8. Final: heading rises in, then one pass of light over the button */
+html.motion .final h2{opacity:0; transform:translateY(var(--rise-lg))}
+html.motion .final.is-in h2{opacity:1; transform:none; transition:opacity .6s var(--ease-soft), transform .6s var(--ease-soft)}
+.final .btn{position:relative; overflow:hidden; isolation:isolate}
+.final .btn::after{content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,246,222,.55) 50%,transparent 65%);
+  transform:translateX(-110%); opacity:0}
+html.motion .final.is-shining .btn::after{opacity:1; transform:translateX(110%); transition:transform 1.4s var(--ease-soft) .7s}
 </style>
 </head>
 <body>
 
 <header class="wrap site-header">
-  <a class="logo" href="#top" aria-label="Glonari News, home"><b>GLONARI</b><span>NEWS</span></a>
+  <a class="logo" href="#top" aria-label="Glonari News, home"><picture><source srcset="images/logo-mark.webp" type="image/webp"><img class="logo-mark" src="images/logo-mark.png" width="36" height="36" alt=""></picture><span class="logo-word"><b>GLONARI</b><span>NEWS</span></span></a>
   <nav aria-label="Main">
     <a class="navlink" href="#demo">Try the demo</a>
     <a class="navlink" href="#how">How it works</a>
+    <a class="navlink" href="#brief">Daily Brief</a>
     <a class="btn btn-gold btn-sm" href="#early-access">Early access</a>
   </nav>
 </header>
@@ -222,8 +375,8 @@ footer{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; pa
 <section class="intro" id="intro" aria-label="Introduction">
   <div class="intro-stage">
     <!-- Scroll-driven film: the camera walks down a corridor into the Glonari studio and ends on Gia at her desk. -->
-    <video class="intro-video" id="introVideo" muted playsinline preload="auto" poster="images/intro-first.jpg" aria-hidden="true"></video>
-    <img class="intro-poster" src="images/intro-last.jpg" alt="Gia sitting at her desk in the Glonari News studio" width="1344" height="768">
+    <video class="intro-video" id="introVideo" muted playsinline preload="auto" poster="images/intro-first.jpg?v=2" aria-hidden="true"></video>
+    <img class="intro-poster" src="images/intro-last.jpg?v=2" alt="Gia sitting at her desk in the Glonari News studio" width="1344" height="768">
     <div class="intro-shade" aria-hidden="true"></div>
     <div class="intro-copy wrap">
       <div class="intro-lines">
@@ -261,6 +414,43 @@ footer{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; pa
   </figure>
 </section>
 
+<section class="wrap explore" id="explore" aria-label="Examples of what Gia can follow for you">
+  <!-- Each tile rotates through its slides. Put the videos in video/cards/ with these file names. -->
+  <div class="bento" id="bento">
+    <div class="tile">
+      <div class="slide on" style="--ph:linear-gradient(135deg,#1D3B6E,#0E1A33)"><video data-src="video/cards/world.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">world.mp4</span>
+        <div class="cap"><span class="tag">The world, in five minutes</span><p class="line">What mattered overnight, and why it matters to me.</p></div></div>
+      <div class="slide" style="--ph:linear-gradient(135deg,#55606B,#22282E)"><video data-src="video/cards/work.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">work.mp4</span>
+        <div class="cap"><span class="tag">My work</span><p class="line">A new AI tool is changing design jobs. What it means for mine.</p></div></div>
+    </div>
+    <div class="tile">
+      <div class="slide on" style="--ph:linear-gradient(135deg,#C9772E,#5A2A16)"><video data-src="video/cards/city.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">city.mp4</span>
+        <div class="cap"><span class="tag">My city, right now</span><p class="line">A new night market opens downtown this Friday.</p></div></div>
+      <div class="slide" style="--ph:linear-gradient(135deg,#E08A6B,#7A3554)"><video data-src="video/cards/weekend.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">weekend.mp4</span>
+        <div class="cap"><span class="tag">My weekend</span><p class="line">Three free concerts in the park on Saturday.</p></div></div>
+    </div>
+    <div class="tile">
+      <div class="slide on" style="--ph:linear-gradient(135deg,#2F7C82,#123238)"><video data-src="video/cards/commute.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">commute.mp4</span>
+        <div class="cap"><span class="tag">My commute</span><p class="line">Two metro lines run less often this weekend.</p></div></div>
+      <div class="slide" style="--ph:linear-gradient(135deg,#6B5BA8,#2A2350)"><video data-src="video/cards/phone.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">phone.mp4</span>
+        <div class="cap"><span class="tag">My phone</span><p class="line">A big update arrives next week. Worth installing?</p></div></div>
+    </div>
+    <div class="tile">
+      <div class="slide on" style="--ph:linear-gradient(135deg,#7E9BB8,#34485E)"><video data-src="video/cards/weather.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">weather.mp4</span>
+        <div class="cap"><span class="tag">My weather</span><p class="line">Rain on Saturday. Maybe move the hike to Sunday.</p></div></div>
+      <div class="slide" style="--ph:linear-gradient(135deg,#3E8A4F,#173A22)"><video data-src="video/cards/team.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">team.mp4</span>
+        <div class="cap"><span class="tag">My team</span><p class="line">Last night’s match in two minutes.</p></div></div>
+    </div>
+    <div class="tile">
+      <div class="slide on" style="--ph:linear-gradient(135deg,#B89452,#4A3A1C)"><video data-src="video/cards/money.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">money.mp4</span>
+        <div class="cap"><span class="tag">My money</span><p class="line">Rates changed today. What it means for my savings.</p></div></div>
+      <div class="slide" style="--ph:linear-gradient(135deg,#8CC3D9,#2F6B86)"><video data-src="video/cards/air.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">air.mp4</span>
+        <div class="cap"><span class="tag">My air today</span><p class="line">Air quality in my area is good this morning.</p></div></div>
+    </div>
+  </div>
+  <div class="explore-note">Examples only. In the app, Gia follows live news for the things you care about.</div>
+</section>
+
 <section id="demo" class="band">
   <div class="wrap section">
     <div class="section-head">
@@ -290,26 +480,83 @@ footer{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; pa
   </div>
 </section>
 
-<section id="how" class="wrap section">
+<section id="how" class="wrap section how-redesigned">
   <div class="section-head">
     <div class="eyebrow">How it works</div>
     <h2>More than a news feed. Someone to think it through with.</h2>
   </div>
-  <div class="cards">
-    <div class="card">
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#D9A54A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg>
-      <h3>She learns what matters to you</h3>
-      <p>Tell Gia what you’re planning or working on, in your own words. She works out which news touches your life — and you can change her focus anytime.</p>
+  <div class="how-editorial" aria-label="Three ways Gia makes the news personal">
+    <article class="how-scene how-scene-primary">
+      <img src="images/understands.jpg" alt="Woman at her laptop, looking out across the city" loading="lazy">
+      <div class="how-scene-top"><div class="how-kicker"><span class="how-index">01</span><b>Understands you</b></div><span class="how-orbit" aria-hidden="true"></span></div>
+      <div class="how-copy">
+        <h3>She learns what matters to you</h3>
+        <p>Tell Gia what you’re planning or working on, in your own words. She works out which news touches your life — and you can change her focus anytime.</p>
+      </div>
+    </article>
+    <article class="how-scene how-scene-analysis">
+      <img src="images/explains.jpg" alt="A cinematic collection of news stories from around the world" loading="lazy">
+      <div class="how-scene-top"><div class="how-kicker"><span class="how-index">02</span><b>Connects the dots</b></div><span class="how-cross" aria-hidden="true">✳</span></div>
+      <div class="how-copy">
+        <h3>She explains, not just repeats</h3>
+        <p>Gia weighs reporting from many sources, then tells you what most likely happened, why it matters to you, and what is still uncertain.</p>
+      </div>
+    </article>
+    <article class="how-scene how-scene-ask">
+      <img src="images/conversation.jpg" alt="Man speaking naturally while looking at his phone" loading="lazy">
+      <div class="how-scene-top"><div class="how-kicker"><span class="how-index">03</span><b>Always a conversation</b></div><span class="how-sound" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></div>
+      <div class="how-copy">
+        <h3>Ask about anything</h3>
+        <p>Not only your topics. Heard about a story somewhere? Ask Gia, by voice or text, and she’ll explain it the same way.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="brief" class="brief" aria-labelledby="brief-title">
+  <div class="wrap section">
+    <div class="section-head">
+      <div class="eyebrow">New: Daily Brief</div>
+      <h2 id="brief-title">Your Daily Brief, presented by Gia.</h2>
+      <p>Every day, Gia scans the news and puts together a short brief around your interests. Then she presents it to you, story by story, like your own news show.</p>
     </div>
-    <div class="card">
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#D9A54A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2M8.5 11h5M11 8.5v5"/></svg>
-      <h3>She explains, not just repeats</h3>
-      <p>Gia weighs reporting from many sources, then tells you what most likely happened, why it matters to you, and what is still uncertain.</p>
-    </div>
-    <div class="card">
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#D9A54A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>
-      <h3>You can simply talk</h3>
-      <p>Ask a question in the middle of a briefing, by voice or text. Gia answers, then picks up right where she left off.</p>
+    <div class="brief-grid">
+      <article class="bcard">
+        <h3>Like your own news show.</h3>
+        <div class="player">
+          <video data-src="video/cards/gia-brief.mp4" muted loop playsinline preload="none" aria-hidden="true"></video><span class="ph-name">gia-brief.mp4</span>
+          <span class="count">Story 2 of 5</span>
+          <span class="bar" aria-hidden="true"><i class="done"></i><i class="now"></i><i></i><i></i><i></i></span>
+        </div>
+        <div class="bstory">
+          <div class="meta">My city <span>Sample story</span></div>
+          <b>A new night market opens downtown this Friday.</b>
+          <span class="orig" role="link" aria-disabled="true">Read the original story
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+          <small>In the app, this opens the full article, with all its photos.</small>
+        </div>
+        <p class="push">She goes through the stories she picked for you, one by one. Want more? Open the original.</p>
+      </article>
+      <article class="bcard">
+        <h3>Interrupt her anytime.</h3>
+        <div class="convo">
+          <div class="b-gia">The market runs every evening from six…</div>
+          <div class="b-you">Wait, is it open on Sunday too?</div>
+          <div class="b-gia">Only Friday and Saturday this month.</div>
+          <span class="resume"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-2"/></svg>Back to your brief: story 3 of 5</span>
+        </div>
+        <p>Ask a question in the middle. Gia answers, then carries on with the stories she picked for you.</p>
+      </article>
+      <article class="bcard">
+        <h3>Any language, on the fly.</h3>
+        <div class="convo">
+          <div class="b-you"><span class="b-lang">EN</span>What’s the weather this weekend?</div>
+          <div class="b-gia"><span class="b-lang">EN</span>Rain on Saturday, sun on Sunday.</div>
+          <div class="b-you" lang="es"><span class="b-lang">ES</span>¿Y el domingo por la tarde?</div>
+          <div class="b-gia" lang="es"><span class="b-lang">ES</span>Soleado y templado. Buen día para salir.</div>
+        </div>
+        <p>Switch languages whenever you like. Gia replies in the language you used last.</p>
+      </article>
     </div>
   </div>
 </section>
@@ -338,7 +585,7 @@ footer{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; pa
   </div>
   <footer class="wrap">
     <span>© 2026 Glonari. Gia is an AI assistant.</span>
-    <span>Stories in the demo are illustrative samples, not live news.</span>
+    <span>Stories and examples on this page are illustrative samples, not live news.</span>
   </footer>
 </section>
 </main>
@@ -580,7 +827,7 @@ S = fresh(); render(false);
   const small = matchMedia("(max-width: 760px)").matches || (navigator.connection && navigator.connection.saveData);
   // MP4 (H.264, every frame a keyframe) scrubs best; WebM is the fallback for browsers without H.264.
   const ext = video.canPlayType('video/mp4; codecs="avc1.640028"') ? "mp4" : "webm";
-  video.src = `video/gia-intro${small ? "-small" : ""}.${ext}`;
+  video.src = `video/gia-intro${small ? "-small" : ""}.${ext}?v=2`;
   video.load();
 
   // iOS Safari only paints seeked frames after the video has been "played" once.
@@ -634,6 +881,90 @@ S = fresh(); render(false);
     if (active && !raf) raf = requestAnimationFrame(frame);
   }).observe(intro);
 })();
+
+/* ---------- Example tiles and Daily Brief videos ---------- */
+(function () {
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const vids = [...document.querySelectorAll("video[data-src]")];
+
+  // A video that isn't there yet keeps its colored placeholder and shows its file name.
+  vids.forEach(v => v.addEventListener("error", () => v.classList.add("missing"), true));
+  function load(v) {
+    if (v.dataset.loaded) return;
+    v.dataset.loaded = "1";
+    const s = document.createElement("source");
+    s.src = v.dataset.src; s.type = "video/mp4";
+    s.addEventListener("error", () => v.classList.add("missing"));
+    v.appendChild(s); v.load();
+  }
+  const playIfShown = v => {
+    const slide = v.closest(".slide");
+    if (still || (slide && !slide.classList.contains("on"))) { v.pause(); return; }
+    v.play().catch(() => {});
+  };
+
+  // Load and play only what is on screen.
+  const io = new IntersectionObserver(entries => entries.forEach(e => {
+    e.target.querySelectorAll("video[data-src]").forEach(v => {
+      if (e.isIntersecting) { load(v); playIfShown(v); } else v.pause();
+    });
+    e.target.dataset.visible = e.isIntersecting ? "1" : "";
+  }), { rootMargin: "200px" });
+  document.querySelectorAll(".tile, .player").forEach(el => io.observe(el));
+
+  if (still) return;
+  // Each tile switches to its next example every 5 s, slightly out of step with the others.
+  document.querySelectorAll(".tile").forEach((tile, i) => {
+    const slides = [...tile.querySelectorAll(".slide")];
+    if (slides.length < 2) return;
+    let k = 0;
+    setTimeout(() => setInterval(() => {
+      if (!tile.dataset.visible || document.hidden) return;
+      slides[k].classList.remove("on");
+      const old = slides[k].querySelector("video"); if (old) old.pause();
+      k = (k + 1) % slides.length;
+      slides[k].classList.add("on");
+      const v = slides[k].querySelector("video");
+      if (v) { load(v); v.currentTime = 0; v.play().catch(() => {}); }
+    }, 5000), i * 900);
+  });
+})();
 </script>
+<script>
+/* ---------- Quiet motion for Daily Brief, You stay in control and the final screen ---------- */
+(() => {
+  const mq = matchMedia("(prefers-reduced-motion: no-preference)");
+  const root = document.documentElement;
+  const apply = () => root.classList.toggle("motion", mq.matches);
+  apply();
+  mq.addEventListener ? mq.addEventListener("change", apply) : mq.addListener(apply);
+
+  // Order of appearance inside each block.
+  document.querySelectorAll(".bcard .convo").forEach(c => [...c.children].forEach((el, i) => el.style.setProperty("--i", i)));
+  document.querySelectorAll(".trust-list li").forEach((li, i) => {
+    li.querySelectorAll("svg path").forEach(p => { p.setAttribute("pathLength", "1"); p.style.setProperty("--i", i); });
+  });
+
+  // Brief cards and the trust block play each time they come into view
+  // and re-arm only after they have left the screen completely.
+  const replay = new IntersectionObserver(entries => entries.forEach(e => {
+    if (e.isIntersecting && e.intersectionRatio >= 0.35) e.target.classList.add("is-in");
+    else if (!e.isIntersecting) e.target.classList.remove("is-in");
+  }), { threshold: [0, 0.35] });
+  document.querySelectorAll(".bcard, .trust").forEach(el => replay.observe(el));
+
+  // Final screen: heading and the single pass of light play once per page load.
+  const fin = document.querySelector(".final");
+  if (fin) {
+    const once = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      fin.classList.add("is-in", "is-shining");
+      once.disconnect();
+    }, { threshold: 0.4 });
+    once.observe(fin);
+  }
+})();
+</script>
+
 </body>
 </html>
